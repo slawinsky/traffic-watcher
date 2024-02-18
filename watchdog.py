@@ -2,10 +2,10 @@ import re
 import time
 
 def find_ip_addresses(line):
-    ip_regex = r'\b(?:\d{1,3}\.){3}\d{1,3}\b'
+    ip_regex = r'\b(?!192\.168\.33\.\d{1,3}\b)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b'
     ip_addresses = re.findall(ip_regex, line)
     for ip in ip_addresses:
-        print("Found IP address:", ip)
+        print(ip)
 
 
 def monitor_file(path):
@@ -16,5 +16,4 @@ def monitor_file(path):
         if not line:
             time.sleep(0.1)
             continue
-        print("New line detected:", line.strip())
         find_ip_addresses(line.strip())
