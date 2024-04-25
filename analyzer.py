@@ -5,18 +5,19 @@ import json
 def get_ip_analyses(ip):
     report = get_ip_address_report(ip)
     data = json.loads(report.text)
-    analyses = data['data']['attributes']['last_analysis_results']
-    return analyses
+    return data
 
 
 def analyze_ip(ip):
     is_danger = False
-    analyses = get_ip_analyses(ip)
+    data = get_ip_analyses(ip)
 
-    for analysis in analyses:
-        result = analyses[analysis]['result']
-        if result == 'malicious' or result == 'malware':
-            is_danger = True
-            break
+    is_bogon = data['is_bogon']
+    is_crawler = data['is_crawler']
+    is_tor = data['is_tor']
+    is_abuser = data['is_abuser']
+
+    if is_bogon or is_crawler or is_tor or is_abuser:
+        is_danger = True
 
     return is_danger
