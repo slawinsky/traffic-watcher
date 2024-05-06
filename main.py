@@ -1,7 +1,4 @@
 import watchdog
-import analyzer
-import db
-import ebtables
 
 FILE_PATH = "/Users/kuba/PycharmProjects/traffic-watcher/logs.log"
 
