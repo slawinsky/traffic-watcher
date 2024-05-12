@@ -19,9 +19,10 @@ def check_if_ip_exists(ip):
 def add_to_db(ip, isDanger):
     IPS.insert_one({
         'ip': ip,
-        'isDanger': isDanger
+        'isDanger': isDanger,
+        'hits': 1
     })
 
 
-
-
+def increase_hits_count(ip):
+    IPS.update_one({'ip': ip}, {'$inc': {'hits': 1}})
