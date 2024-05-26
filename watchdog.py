@@ -1,6 +1,7 @@
 import re
 import time
 from collector import collect_ip, collect_protocol
+from ap_handler import handle_ap_connection, handle_ap_disconnection
 
 
 def find_ip_addresses(line):
@@ -17,13 +18,26 @@ def find_protocols(line):
         collect_protocol(protocol)
 
 
+def find_ap_events(line):
+    handshake_regex = r'\b([0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2})\b(?=.*handshake completed)'
+    mac_addresses = re.findall(handshake_regex, line)
+    for mac in mac_addresses:
+        handle_ap_connection(mac)
+
+    disassociation_regex = r'\b([0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2})\b(?=.*disassociated)'
+    mac_addresses = re.findall(disassociation_regex, line)
+    for mac in mac_addresses:
+        handle_ap_disconnection(mac)
+
+
 def monitor_file(path):
-    file = open(path)
-    file.seek(0, 2)
+    traffic = open(path)
+    traffic.seek(0, 2)
     while True:
-        line = file.readline()
-        if not line:
+        traffic_line = traffic.readline()
+        if not traffic_line:
             time.sleep(0.1)
             continue
-        find_ip_addresses(line.strip())
-        find_protocols(line.strip())
+        find_ip_addresses(traffic_line.strip())
+        find_protocols(traffic_line.strip())
+        find_ap_events(traffic_line.strip())
